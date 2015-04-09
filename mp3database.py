@@ -70,7 +70,7 @@ class MusicDB(object):
         self.playlist_db = list()
         self.filename = filename
         self.initialized = False
-        self.file_types = frozenset(('mp3', 'flac', 'ogg'))
+        self.file_types = frozenset(('mp3', 'flac', 'ogg', 'oga'))
 
     def num_songs(self):
         return len(self.music_db)
@@ -123,6 +123,9 @@ class MusicDB(object):
                         ending = f.split('.')[-1].lower()
                         if ending in self.file_types:
                             l.append(f)
+                        else:
+                            print f
+                            print ending, "not supported"
                     else:
                         # parse subdirectories
                         p = self._parse_dirs([f])
@@ -131,6 +134,7 @@ class MusicDB(object):
                 except Exception, e:
                     print e
         if not l:
+            print l
             raise Exception('Parsing failed for {}'.format(directories))
         return l
 
