@@ -76,25 +76,25 @@ class MainScene(scene.Scene):
                 # first row
                 MainRegions("volume up", 3, 241, 79, 317,
                             action=self.vol_up,
-                            img='./icons/isometric_vol_up.png'),
+                            img=vol_up_icon),
                 MainRegions("volume mute", 82, 241, 158, 317,
                             action=self.mute,
-                            img='./icons/isometric_mute.png'),
+                            img=mute_icon),
                 MainRegions("volume down", 161, 241, 237, 317,
                             action=self.vol_down,
-                            img='./icons/isometric_vol_dn.png'),
+                            img=vol_dn_icon),
                 # second row
                 self.party_region,
                 # third row
                 MainRegions("next song", 3, 3, 79, 79,
                             action=self.next_song,
-                            img='./icons/isometric_skip.png'),
+                            img=next_icon),
                 MainRegions("song selector", 82, 3, 158, 79,
                             action=self.song_select,
-                            img='./icons/isometric_play.png'),
+                            img=select_icon),
                 MainRegions("prev song", 161, 3, 237, 79,
                             action=self.prev_song,
-                            img='./icons/isometric_rewind.png')
+                            img=prev_icon)
                ]
         else:
             regions = [
