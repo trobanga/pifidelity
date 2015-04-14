@@ -21,7 +21,7 @@ class Play(object):
         print 'set playlist', pl
         self.cur_playlist = pl
         # self.cur_playlist.first()
-
+        
     def vol_up(self):
         self.vol += self.dvol
         if self.vol > 1:
@@ -56,7 +56,15 @@ class Play(object):
             self.start()
         except Exception, e:
             print e
-            
+
+    def pause(self):
+        pygame.mixer.music.pause()
+        self.is_playing = False
+
+    def unpause(self):
+        pygame.mixer.music.unpause()
+        self.is_playing = True
+        
     def stop(self):
         pygame.mixer.music.stop()
         self.is_playing = False
@@ -83,10 +91,8 @@ class Play(object):
         """
         Plays next song if
         """
-
         if not pygame.mixer.music.get_busy() \
             and self.cur_playlist \
             and not self.cur_playlist.is_empty() \
             and self.is_playing:
-
             self.next_song()
