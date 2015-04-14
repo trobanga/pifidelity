@@ -134,7 +134,6 @@ class MusicDB(object):
                 except Exception, e:
                     print e
         if not l:
-            print l
             raise Exception('Parsing failed for {}'.format(directories))
         return l
 

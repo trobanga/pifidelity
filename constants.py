@@ -12,7 +12,7 @@ BLACK = pygame.Color(0, 0, 0)
 GRAY = pygame.Color(39, 37, 37)
 LIGHT_GRAY = pygame.Color(130, 100, 100)
 
-# path to pifidelity- it is easier to deal with absolute paths
+# path to pifidelity
 pifi_dir = '/home/pi/pifidelity/'
 
 
