@@ -80,14 +80,19 @@ class Blinkentanz(pygame.Surface):
         """
         return self.bframes[self.idx_bframe].frame_duration
 
-    def next(self):
+    def next(self, loop=False):
         """
         Set frame idx to next and draw frame
         """
         self.idx_bframe += 1
         if self.idx_bframe >= self.nof_bframes:
-            self.idx_bframe = 0
+            if loop:
+                self.idx_bframe = 0
+            else:
+                return 1
+            
         self.draw_dancefloor()
+        return 0
            
     def goto_frame(self, idx):
         """
@@ -176,7 +181,6 @@ class Blinkentanz(pygame.Surface):
                     k = 2**(8-bits)
                     b = k - 1
                     for ix, c in enumerate(row.text):
-                        
                         c =  k * int(c, 16) + b
                         if c > b:
                             self.bframes[self.idx_bframe][iy][ix] = (c, c, c)

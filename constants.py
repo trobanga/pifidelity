@@ -15,14 +15,12 @@ LIGHT_GRAY = pygame.Color(130, 100, 100)
 # path to pifidelity
 pifi_dir = '/home/pi/pifidelity/'
 
-
 # path to music
 music_directories = ["/mnt/Banca/Music"]
 music_db_file = pifi_dir + 'music.db'
 
-
 # paths to bmls
-bml_directories = [pifi_dir + 'bmls']
+bml_directories = [pifi_dir + 'bmls', '/mnt/Banca/bmls']
 
 # paths to icons
 icons_dir = pifi_dir + 'icons/'

@@ -132,9 +132,11 @@ class MainScene(scene.Scene):
     def party_zone(self, r):
         if self.play.is_playing:
             self.play.stop()
+            self.party_region.stop()
         else:
             try:
                 self.play.start()
+                self.party_region.start()
             except Exception, e:
                 return "goto_song_select"
 
@@ -152,3 +154,7 @@ class MainScene(scene.Scene):
             t = r.pressed(y, x, long_pressed)
             if t:
                 return t
+
+    def activated(self):
+        if self.play.is_playing:
+            self.party_region.start()

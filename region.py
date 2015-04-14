@@ -26,12 +26,9 @@ class Region(object):
                 and x >= self.x \
                 and y <= (self.y + self.height) \
                 and y >= self.y:
-            print self._id
             if long_pressed:
                 if self.action_long:
-                    print self._id, "long"
                     return self.action_long(self)
             else:
                 if self.action:
-                    print self._id, "short"
                     return self.action(self)

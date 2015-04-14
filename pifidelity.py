@@ -76,6 +76,7 @@ class Pyfidelity(object):
         print 'action', action
         if action == "goto_main":
             self.cur_scene = self.main_scene
+            self.main_scene.activated()
         elif action == "goto_main_lp":
             self.play.stop()
             self.cur_scene = self.main_scene

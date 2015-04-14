@@ -24,7 +24,7 @@ class PartyZone(region.Region):
                                              bcolor,
                                              action=action,
                                              action_long=action_long)
-
+        self.partying = False  # meh, lame
         self.partytime = 0  # time since start in ms
         self.bmls = self._parse_bmls(bml_directories)
         self.bt = blinkentanz.Blinkentanz(x2-x1,
@@ -33,21 +33,22 @@ class PartyZone(region.Region):
                                           fcolor_off,
                                           bcolor,
                                           orientation)
-        self.load_bml()
-        if self.cur_bml:
-            self.frame_duration = self.bt.get_frame_duration()
+        self.frame_duration = 0
+        self.load_bml(bml=bml_directories[0] + "/pifidelity.bml")
 
     def add_time(self, t):
-        self.partytime += t
+        if self.partying:
+            self.partytime += t
 
-    def load_bml(self, fails=0, max_fails=3):
+    def load_bml(self, fails=0, max_fails=3, bml=None):
         if fails == max_fails:
             print 'tried three times loading a bml. Giving up.'
-        bml = self.rand_bml()     
+        if not bml:
+            bml = self.rand_bml()
         try:
             self.bt.read_bml(bml)
-            print 'loaded', bml
             self.cur_bml = bml
+            self.frame_duration = self.bt.get_frame_duration()
         except Exception, e:
             print e
             self.load_bml(fails=fails+1)
@@ -59,10 +60,18 @@ class PartyZone(region.Region):
         """
         return random.sample(self.bmls, 1)[0]
 
+    def start(self):
+        self.partying = True
+
+    def stop(self):
+        self.partying = False
+        
     def draw(self, screen):
         if self.partytime > self.frame_duration:
             self.partytime = 0
-            self.bt.next()
+            if self.bt.next():
+                self.load_bml()
+                                
             self.frame_duration = self.bt.get_frame_duration()
         
         screen.blit(self.bt, [self.x+self.bt.xoffset, self.y+self.bt.yoffset])
