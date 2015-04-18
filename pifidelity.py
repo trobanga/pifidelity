@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 import pygame
 from pygame.locals import *
 import sys
@@ -11,7 +12,7 @@ import main_scene
 import song_select_scene
 import numpy as np
 from collections import deque
-
+import RPi.GPIO as GPIO
 import play
 
 print 'PID', os.getpid()
@@ -38,6 +39,8 @@ class Pyfidelity(object):
         self.playing = False  # playing music
         self.done = True  # program is running
 
+        self.ext_button_time = 500  # poor man's solution for bouncing
+        
         self.is_mouse_button_down = False
         self.mouse_button_down_pos = 0, 0
         self.mouse_speed = 0, 0
@@ -65,12 +68,44 @@ class Pyfidelity(object):
 
         self.button_down_time = 0  # time the button was pressed
 
+        self.GPIO_init()
+        self.ext_button_init(23)
+
     def init_touchscreen(self):
         os.putenv('SDL_VIDEODRIVER', 'fbcon')
         os.putenv('SDL_FBDEV', '/dev/fb1')
         os.putenv('SDL_MOUSEDRV', 'TSLIB')
         os.putenv('SDL_MOUSEDEV', '/dev/input/touchscreen')
 
+    def display_on(self):
+        pass
+        
+    def display_off(self):
+        pass
+
+    def GPIO_init(self):
+        """
+        Init for GPIO
+        """
+        GPIO.setmode(GPIO.BCM)
+
+    def ext_button_init(self, GPIO_pin):
+        """
+        Init for GPIO button
+        GPIO_pin in BCM
+        Buttons are set to active low
+        """
+        GPIO.setup(GPIO_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        
+    def ext_button_pressed(self, GPIO_pin):
+        """
+        Returns True if button at GPIO_pin is pressed
+        """
+        if self.ext_button_time > 400:
+            if GPIO.input(GPIO_pin) == 0:  # active low
+                self.ext_button_time = 0
+                print "hey, I'm (im)pressed"
+            
     def pressed(self, x, y, long_pressed=False):
         action = self.cur_scene.pressed(x, y, long_pressed)
         print 'action', action
@@ -164,7 +199,7 @@ class Pyfidelity(object):
 
     def process_event(self, event):
         if event.type is MOUSEBUTTONDOWN:
-            self.button_down_time = self.fps_clock.get_time()
+            self.button_down_time = 0  # self.fps_clock.get_time()
             self.is_mouse_button_down = True
             self.mouse_speed = 0, 0
             self.mouse_button_down_pos = pygame.mouse.get_pos()
@@ -188,8 +223,11 @@ class Pyfidelity(object):
             self.fps_clock.tick(self.tick_speed)
             self.play.play()
             self.cur_scene.update(self.screen)
+            fps_time = self.fps_clock.get_time()
             if self.cur_scene == self.main_scene:
-                self.main_scene.party_region.add_time(self.fps_clock.get_time())
+                self.main_scene.party_region.add_time(fps_time)
+            self.ext_button_time += fps_time
+            self.ext_button_pressed(23)
         # finish
         pygame.quit()
 
