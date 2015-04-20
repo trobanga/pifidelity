@@ -13,6 +13,7 @@ import song_select_scene
 import numpy as np
 from collections import deque
 import play
+import RPi.GPIO as GPIO
 
 print 'PID', os.getpid()
 print sys.platform
@@ -29,13 +30,16 @@ class Pyfidelity(object):
             self.init_touchscreen()
             self.GPIO_init()
             self.ext_button_init(23)
-            pygame.mouse.set_visible(False)
 
         # only 1 (rot left) and 3 (rot right) supported
         self.orientation = orientation
         pygame.init()
         self.screen = pygame.display.set_mode((screen_width, screen_height))
         self.fps_clock = pygame.time.Clock()
+
+        if not debug:
+            pygame.mouse.set_visible(False)
+
 
         self.playing = False  # playing music
         self.done = True  # program is running
@@ -86,7 +90,6 @@ class Pyfidelity(object):
         """
         Init for GPIO
         """
-        import RPi.GPIO as GPIO
         GPIO.setmode(GPIO.BCM)
 
     def ext_button_init(self, GPIO_pin):
