@@ -17,7 +17,7 @@ class SongScene(scene.Scene):
 
         def __init__(self):
             self.artists, self.album, self.albums_from_artist = range(3)
-            self.aspects = ['artists',
+            self.aspects = ['albumartists',
                             'albums',
                             'albums from artist']
 

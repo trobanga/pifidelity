@@ -12,7 +12,6 @@ import main_scene
 import song_select_scene
 import numpy as np
 from collections import deque
-import RPi.GPIO as GPIO
 import play
 
 print 'PID', os.getpid()
@@ -24,17 +23,19 @@ class Pyfidelity(object):
 
     def __init__(self, debug=False, orientation=3,
                  screen_width=320, screen_height=240):
+        self.debug = debug
         if not debug:
+            # do all raspberry pi related stuff
             self.init_touchscreen()
+            self.GPIO_init()
+            self.ext_button_init(23)
+            pygame.mouse.set_visible(False)
 
         # only 1 (rot left) and 3 (rot right) supported
         self.orientation = orientation
         pygame.init()
         self.screen = pygame.display.set_mode((screen_width, screen_height))
         self.fps_clock = pygame.time.Clock()
-
-        if not debug:
-            pygame.mouse.set_visible(False)
 
         self.playing = False  # playing music
         self.done = True  # program is running
@@ -68,8 +69,6 @@ class Pyfidelity(object):
 
         self.button_down_time = 0  # time the button was pressed
 
-        self.GPIO_init()
-        self.ext_button_init(23)
 
     def init_touchscreen(self):
         os.putenv('SDL_VIDEODRIVER', 'fbcon')
@@ -87,6 +86,7 @@ class Pyfidelity(object):
         """
         Init for GPIO
         """
+        import RPi.GPIO as GPIO
         GPIO.setmode(GPIO.BCM)
 
     def ext_button_init(self, GPIO_pin):
@@ -226,8 +226,9 @@ class Pyfidelity(object):
             fps_time = self.fps_clock.get_time()
             if self.cur_scene == self.main_scene:
                 self.main_scene.party_region.add_time(fps_time)
-            self.ext_button_time += fps_time
-            self.ext_button_pressed(23)
+            if not self.debug:
+                self.ext_button_time += fps_time
+                self.ext_button_pressed(23)
         # finish
         pygame.quit()
 

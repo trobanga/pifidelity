@@ -9,7 +9,7 @@ import itertools
 
 
 class db_structure(object):
-    data_fields = ['artist', 'title', 'album', 'tracknumber']
+    data_fields = ['albumartist', 'title', 'album', 'tracknumber']
 
     def __init__(self, path, artist, title, album, tracknumber):
         self.path = path
@@ -201,8 +201,8 @@ class MusicDB(object):
         """
         Updates DBS with album and artist entries
         """
-        self.album_db = self._find(db, 'artist', 'album')
-        self.artist_db = self._find(db, 'album', 'artist')
+        self.album_db = self._find(db, 'albumartist', 'album')
+        self.artist_db = self._find(db, 'album', 'albumartist')
         self.music_db = db
         self.initialized = True
 
