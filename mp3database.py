@@ -9,9 +9,14 @@ import itertools
 
 
 class db_structure(object):
-    data_fields = ['albumartist', 'title', 'album', 'tracknumber']
+    data_fields = ['artist', 'title', 'album', 'tracknumber']
 
-    def __init__(self, path, artist, title, album, tracknumber):
+    def __init__(self,
+                 path,
+                 artist,
+                 title,
+                 album,
+                 tracknumber):
         self.path = path
         self.artist = artist
         self.title = title
@@ -33,8 +38,11 @@ class db_structure(object):
                                                      self.tracknumber]))
 
     def __iter__(self):
-        return iter([self.path, self.artist, self.title,
-                     self.album, self.tracknumber])
+        return iter([self.path,
+                     self.artist,
+                     self.title,
+                     self.album,
+                     self.tracknumber])
 
     def __getitem__(self, k):
         if k == 'path':
@@ -43,12 +51,18 @@ class db_structure(object):
         return self.name_dict[k]
 
     def __repr__(self):
-        return repr((self.path, self.artist, self.title,
-                     self.album, self.tracknumber))
+        return repr((self.path,
+                     self.artist,
+                     self.title,
+                     self.album,
+                     self.tracknumber))
 
     def to_list(self):
-        return (self.path, self.artist, self.title,
-                self.album, self.tracknumber)
+        return (self.path,
+                self.artist,
+                self.title,
+                self.album,
+                self.tracknumber)
 
 
 class MusicDB(object):
@@ -64,7 +78,6 @@ class MusicDB(object):
     def __init__(self, filename='music.db'):
         self.music_db = list()  # main db
         self.artist_db = set()  # set of all artists
-        self.album_db = set()  # set of all albums
         self.title_db = set()
         self.path_db = set()
         self.playlist_db = list()
@@ -155,12 +168,22 @@ class MusicDB(object):
             try:
                 t = mutagen.File(f, easy=True)
                 for tag in db_structure.data_fields:
-                    i = t.get(tag)
+                    if tag == 'artist':
+                        # first try albumartist and others
+                        if 'albumartist' in t:
+                            i = t.get('albumartist')
+                        elif 'albumartistsort' in t:
+                            i = t.get('albumartistsort')
+                        else:
+                            i = t.get(tag)
+                    else:
+                        i = t.get(tag)
                     if i:
                         l.append(i[0])
                     else:
                         l.append(None)
             except Exception, e:
+                print 'get tags'
                 print f, e
                 print db_structure, dir(db_structure)
                 for i in xrange(len(l),
@@ -169,24 +192,30 @@ class MusicDB(object):
             return l
 
         d = map(lambda x: db_structure(*get_tags(x)), d)
-        
-        self._update_db(d)
+
+        try:
+            self._update_db(d)
+        except Exception, e:
+            raise e
         self.save_db(d)
 
     def _find(self, db, wanted, t):
         """
         Finds wanted e.g. 'artist'
-        for t e.g. 'song/album'
+        for args e.g. 'album'
         in db
         """
-        def make_db(db, key):
+        def crawl_db(key):
+            """
+            Return set of all DB entries of key
+            """
             s = set()
             for e in db:
                 s.add(e[key])
             return s
 
         d = dict()
-        for n in make_db(db, t):
+        for n in crawl_db(t):
             w = set()
             for a in self._filter_by(db, t, n):
                 name = a[wanted]
@@ -196,13 +225,12 @@ class MusicDB(object):
                     w.add("unknown")
             d[n] = w
         return d
-
+        
     def _update_db(self, db):
         """
         Updates DBS with album and artist entries
         """
-        self.album_db = self._find(db, 'albumartist', 'album')
-        self.artist_db = self._find(db, 'album', 'albumartist')
+        self.artist_db = self._find(db, 'album', 'artist')
         self.music_db = db
         self.initialized = True
 
@@ -212,12 +240,7 @@ class MusicDB(object):
     def get_album(self, name):
         return self._sort_by(self._get('album', self.music_db, name),
                              'tracknumber')
-
-    def get_artists_from_album(self, name):
-        if name not in self.album_db:
-            return None
-        return self.album_db[name]
-
+    
     def get_title(self, db, name):
         return self._get('title', db, name)
 

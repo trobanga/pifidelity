@@ -13,7 +13,7 @@ import song_select_scene
 import numpy as np
 from collections import deque
 import play
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 
 print 'PID', os.getpid()
 print sys.platform
@@ -50,7 +50,7 @@ class Pyfidelity(object):
         self.mouse_button_down_pos = 0, 0
         self.mouse_speed = 0, 0
         self.mouse_speed_deque = [deque(maxlen=20), deque(maxlen=20)]
-        self.gravity = 0.01
+        self.gravity = 0.05
         self.is_scrolling = [False, False]
         self.scroll_thres = 10, 10
         self.tick_speed = 60
