@@ -13,7 +13,7 @@ import song_select_scene
 import numpy as np
 from collections import deque
 import play
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 
 print 'PID', os.getpid()
 print sys.platform
